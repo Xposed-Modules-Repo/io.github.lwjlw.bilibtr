@@ -1,14 +1,62 @@
 # BiliBTR
 
-为哔哩哔哩官方安卓客户端提供多 CDN 并发加速的 LSPosed 模块。
+**Multi-CDN playback accelerator for the official Bilibili Android client.**
+**为哔哩哔哩官方安卓客户端提供多 CDN 并发加速的 LSPosed 模块。**
 
-[下载](https://github.com/Xposed-Modules-Repo/io.github.lwjlw.bilibtr/releases) · [源码](https://github.com/lwjlw/io.github.lwjlw.bilibtr) · [问题反馈](https://github.com/lwjlw/io.github.lwjlw.bilibtr/issues)
+[Download](https://github.com/Xposed-Modules-Repo/io.github.lwjlw.bilibtr/releases) · [Source](https://github.com/lwjlw/io.github.lwjlw.bilibtr) · [Issues](https://github.com/lwjlw/io.github.lwjlw.bilibtr/issues)
 
-本仓库为模块的**发布仓库**，APK 见 [Releases](https://github.com/Xposed-Modules-Repo/io.github.lwjlw.bilibtr/releases)。
+This repository is the **release repository** for the module. APKs are published under
+[Releases](https://github.com/Xposed-Modules-Repo/io.github.lwjlw.bilibtr/releases).
 
-## 功能
+---
 
-**网络加速**
+## English
+
+BiliBTR routes the media byte requests issued by the player through a local proxy, which
+**picks faster CDN nodes, downloads in parallel and reads ahead**, then hands the bytes to
+the player — **optimising only the bytes the user already has the right to access**. It
+**cannot unlock any content**.
+
+### Features
+
+| Feature | Description |
+| --- | --- |
+| Multi-CDN node selection | Speed-tests every candidate node and uses the fastest measured |
+| Concurrent connections | Splits one range request into parallel segments; concurrency adapts to the bitrate |
+| Stream-as-you-fetch | Returns data as soon as upstream headers arrive, noticeably improving startup |
+| Read-ahead cache | Prefetches ahead in the background so later requests hit memory directly |
+| Connection pooling | Reuses CDN connections to cut per-request round-trip cost |
+| Graceful degradation | Falls back to a single connection after consecutive failures, then recovers |
+
+The bundled app provides a **speed panel**, **manual node pinning**,
+**buffer size / duration tuning**, and a **floating 3x / 4x speed ball** on the player page.
+
+### Requirements
+
+| Item | Requirement |
+| --- | --- |
+| Android | 12 or newer (`minSdk 31`) |
+| Framework | LSPosed (API 102) |
+| Host app | Official Bilibili client (`tv.danmaku.bili`), verified on 9.8.0 |
+
+### Installation
+
+1. Download the APK from [Releases](https://github.com/Xposed-Modules-Repo/io.github.lwjlw.bilibtr/releases) and install it;
+2. Enable **BiliBTR** in LSPosed Manager and tick the **Bilibili** scope;
+3. Force-stop Bilibili and reopen it;
+4. Open the **BiliBTR** app to configure.
+
+> Applies to **on-demand playback only**; live streaming is untouched.
+> 4K playback overseas is limited by **bandwidth**, not by the concurrency strategy.
+
+---
+
+## 中文
+
+BiliBTR 把播放器发起的媒体字节请求接管到本机代理，由代理**挑选更快的 CDN 节点、并发拉取、
+提前预读**，再把数据交给播放器 —— **只优化用户本来就有权访问的字节**，**不能解锁任何内容**。
+
+### 功能
 
 | 功能 | 说明 |
 | --- | --- |
@@ -19,14 +67,10 @@
 | 连接复用 | 到 CDN 的连接池复用，降低每个请求的往返开销 |
 | 失败降级 | 连续失败自动暂停并发、走单连接，适时自动恢复 |
 
-**设置界面**
+自带界面提供**测速面板**、**节点手动锁定**、**缓冲大小 / 缓冲时长调节**，
+以及播放页的 **3x / 4x 倍速悬浮球**。
 
-- **测速面板**：实时显示吞吐、卡顿次数、并发数、首字节时间、各节点实际用量
-- **节点管理**：一键对全部候选节点测速，可点击切换或保持自动
-- **缓冲调节**：缓冲大小 / 缓冲时长手动调节
-- **播放页悬浮球**：3x / 4x 倍速（官方客户端没有），无操作自动隐藏
-
-## 环境要求
+### 环境要求
 
 | 项目 | 要求 |
 | --- | --- |
@@ -34,27 +78,30 @@
 | 框架 | LSPosed（API 102） |
 | 宿主 | 哔哩哔哩官方客户端（`tv.danmaku.bili`），已验证 9.8.0 |
 
-模块**不会**申请悬浮窗权限。
-
-## 安装
+### 安装
 
 1. 从 [Releases](https://github.com/Xposed-Modules-Repo/io.github.lwjlw.bilibtr/releases) 下载 APK 并安装；
 2. 在 LSPosed 管理器中启用 **BiliBTR**，作用域勾选**哔哩哔哩**；
 3. 强制停止哔哩哔哩后重新打开；
 4. 打开 **BiliBTR** App 进行配置。
 
-## 说明
+> 只作用于**点播**，直播未改；4K 在海外受**带宽**限制，并发策略只能缓解、不能突破。
 
-- 本模块**不能解锁任何内容**，只是优化用户本来就有权访问的字节传输；
-- 只作用于**点播**，直播未改；
-- 4K 等高位率在海外受**带宽**限制，并发策略只能缓解、不能突破。
+---
 
-完整文档见[源码仓库](https://github.com/lwjlw/io.github.lwjlw.bilibtr)。
+## License / 开源与致谢
 
-## 开源与致谢
+Released under the **GNU GPL v3**. Source and full documentation:
+[lwjlw/io.github.lwjlw.bilibtr](https://github.com/lwjlw/io.github.lwjlw.bilibtr).
 
-BiliBTR 使用 [GNU GPL v3 许可证](https://github.com/lwjlw/io.github.lwjlw.bilibtr/blob/main/LICENSE)。
+The concurrent range downloading principle and default parameters come from
+[Bilibili-thread-ripper](https://github.com/MrTangLuyao/Bilibili-thread-ripper) (MIT);
+the local-proxy architecture references
+[PiliPlus, `btr` branch](https://github.com/nishuodedui1145-del/PiliPlus) (GPL-3.0).
+Full third-party attributions:
+[NOTICE.md](https://github.com/lwjlw/io.github.lwjlw.bilibtr/blob/main/NOTICE.md).
 
-并发下载的原理与默认参数参考 [Bilibili-thread-ripper](https://github.com/MrTangLuyao/Bilibili-thread-ripper)（MIT），
+本项目采用 **GNU GPL v3**。并发下载的原理与默认参数参考
+[Bilibili-thread-ripper](https://github.com/MrTangLuyao/Bilibili-thread-ripper)（MIT），
 本地代理架构参考 [PiliPlus `btr` 分支](https://github.com/nishuodedui1145-del/PiliPlus)（GPL-3.0）。
-第三方署名详见[源码仓库的 NOTICE](https://github.com/lwjlw/io.github.lwjlw.bilibtr/blob/main/NOTICE.md)。
+第三方署名详见 [NOTICE.md](https://github.com/lwjlw/io.github.lwjlw.bilibtr/blob/main/NOTICE.md)。
